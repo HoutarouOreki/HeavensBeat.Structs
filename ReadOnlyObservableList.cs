@@ -9,15 +9,13 @@ namespace HeavensBeat.Structs
     {
         private readonly ObservableList<T> list;
 
-        public ReadOnlyObservableList(IEnumerable<T> collection)
-        {
-            list = new ObservableList<T>(collection);
-            list.ItemAdded += ItemAdded;
-            list.ItemRemoved += ItemRemoved;
-        }
+        public ReadOnlyObservableList(ObservableList<T> collection) => list = collection;
 
-        public event Action<T>? ItemAdded;
-        public event Action<T>? ItemRemoved;
+        public void SubscribeToItemAdded(Action<T> action) => list.ItemAdded += action;
+        public void SubscribeToItemRemoved(Action<T> action) => list.ItemRemoved += action;
+
+        public void UnsubscribeFromItemAdded(Action<T> action) => list.ItemAdded -= action;
+        public void UnsubscribeFromItemRemoved(Action<T> action) => list.ItemRemoved -= action;
 
         public T this[int index] => list[index];
 
@@ -27,7 +25,5 @@ namespace HeavensBeat.Structs
         IEnumerator IEnumerable.GetEnumerator() => list.GetEnumerator();
 
         public static implicit operator ReadOnlyObservableList<T>(ObservableList<T> list) => new ReadOnlyObservableList<T>(list);
-
-        public static implicit operator ReadOnlyObservableList<T>(List<T> list) => new ReadOnlyObservableList<T>(list);
     }
 }
